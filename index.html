@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursive AI — Automated Neural Network Optimization</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --body: #2d333b;
+    --muted: #636e7b;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --accent-glow: rgba(37, 99, 235, 0.08);
+    --green: #16a34a;
+    --green-bg: #ecfdf5;
+    --bg: #ffffff;
+    --surface: #f8fafc;
+    --border: #e2e8f0;
+    --max-w: 860px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--body);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* Nav */
+  nav {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--ink); }
+
+  /* Hero */
+  .hero {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  .hero-contact {
+    display: inline-block;
+    padding: 0.7rem 1.8rem;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+
+  .hero-contact:hover { background: var(--accent-dark); }
+
+  /* Stats */
+  .stats-bar {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 1.4rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .stat .number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  /* Sections */
+  section {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+
+  h2::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 0.5rem;
+    border-radius: 2px;
+  }
+
+  p { margin-bottom: 1rem; }
+
+  /* Product card */
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem 2.2rem;
+    margin-top: 1.5rem;
+  }
+
+  .product-card h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.8rem;
+  }
+
+  .product-card p {
+    color: var(--body);
+    font-size: 0.95rem;
+  }
+
+  .result-badge {
+    display: inline-block;
+    background: var(--green-bg);
+    color: var(--green);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    margin-bottom: 0.8rem;
+  }
+
+  /* Features grid */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .feature {
+    padding: 1.3rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .feature strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  .feature span {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  /* About */
+  .founder {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-top: 1.5rem;
+  }
+
+  .founder-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .founder-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .founder-info .title {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .founder-info p {
+    font-size: 0.92rem;
+    margin-bottom: 0;
+  }
+
+  /* Contact */
+  .contact-box {
+    background: var(--ink);
+    color: white;
+    border-radius: 10px;
+    padding: 2.5rem;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .contact-box h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-box p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .contact-box a {
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.05rem;
+    text-decoration: none;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+  }
+
+  .contact-box a:hover { border-bottom-color: white; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2rem; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .features { grid-template-columns: 1fr; }
+    .founder { flex-direction: column; }
+    nav { flex-direction: column; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark">R</div>
+    Recursive AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <h1>Discover <span>better neural networks</span> automatically</h1>
+  <p>Recursive AI builds tools that systematically find architectural improvements to neural networks. No manual tuning. No guesswork. Just verified results across multiple random seeds.</p>
+  <a href="#contact" class="hero-contact">Get in touch</a>
+</div>
+
+<div class="stats-bar">
+  <div class="stat">
+    <span class="number">+6.48pp</span>
+    <span class="label">Best verified gain</span>
+  </div>
+  <div class="stat">
+    <span class="number">10/10</span>
+    <span class="label">Seeds improved</span>
+  </div>
+  <div class="stat">
+    <span class="number">170+</span>
+    <span class="label">Candidates evaluated</span>
+  </div>
+  <div class="stat">
+    <span class="number">3</span>
+    <span class="label">Architectures tested</span>
+  </div>
+</div>
+
+<section id="technology">
+  <h2>Technology</h2>
+  <p>We built a pipeline that explores the space of possible architectural modifications to a given neural network, evaluates each candidate through full training runs, and identifies which modifications reliably improve performance. The system is model-agnostic and works without human guidance on where to search.</p>
+
+  <div class="product-card">
+    <h3>ATLAS</h3>
+    <div class="result-badge">Verified: +6.48pp mean F1, 10/10 seeds improved</div>
+    <p>ATLAS generates candidate modifications, trains modified models on cloud GPUs in parallel, and verifies results across multiple random seeds. On DistilBERT fine-tuned for PII detection, ATLAS discovered a modification that improved entity-level F1 by up to 7.8 percentage points, with no seed showing degraded performance. The system has been tested across multiple model architectures and training conditions.</p>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <strong>Model-agnostic</strong>
+      <span>Works on any neural network architecture. Tested on MLPs, CNNs, and transformers.</span>
+    </div>
+    <div class="feature">
+      <strong>Cloud-parallel evaluation</strong>
+      <span>Evaluates 60+ candidates simultaneously. Hours instead of weeks.</span>
+    </div>
+    <div class="feature">
+      <strong>Multi-seed verification</strong>
+      <span>Every promising result verified across 10+ random seeds. No lucky runs.</span>
+    </div>
+    <div class="feature">
+      <strong>Bounded downside</strong>
+      <span>Worst-case degradation across 20 verified seeds: -0.69 pp. Modifications are safe to deploy.</span>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>Recursive AI LLC develops automated tools for neural network optimization. Our research has been validated across multiple architectures and is targeting publication at top-tier AI conferences.</p>
+
+  <div class="founder">
+    <div class="founder-icon">WC</div>
+    <div class="founder-info">
+      <h3>William Claster</h3>
+      <div class="title">Founder</div>
+      <p>William brings over 30 years of academic experience in AI and machine learning. He has held faculty positions at Ritsumeikan Asia Pacific University (Professor Emeritus), Sophia University, Waseda University, and Temple University Japan. He currently serves as Associate Teaching Professor at Northeastern University and directs the Agentic AI Research Lab, a cross-campus group focused on automated ML pipelines and multi-agent systems.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="contact-box">
+    <h3>Interested in what we're building?</h3>
+    <p>We're exploring partnerships and early applications of our technology.</p>
+    <a href="mailto:william@recursiveai.online">william@recursiveai.online</a>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Recursive AI LLC. All rights reserved.
+</footer>
+
+</body>
+</html>
