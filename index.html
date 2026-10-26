@@ -123,6 +123,83 @@
 
   .hero-contact:hover { background: var(--accent-dark); }
 
+  /* Homepage presentation: show a two-column layout only when the video is available. */
+  .hero-pitch[hidden] { display: none !important; }
+
+  .hero.with-pitch {
+    max-width: 1380px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4.5rem);
+    padding-top: 4.5rem;
+    padding-bottom: 3rem;
+    text-align: left;
+  }
+
+  .hero.with-pitch .hero-copy { min-width: 0; }
+  .hero.with-pitch h1 { font-size: clamp(2.15rem, 3vw, 3.05rem); }
+  .hero.with-pitch .hero-copy p {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 620px;
+  }
+
+  .hero-pitch {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .founder-pitch-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #0d1117;
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.15);
+  }
+
+  .hero-pitch-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.8rem;
+  }
+
+  .hero-pitch-footer span {
+    color: var(--muted);
+    font-size: 0.81rem;
+  }
+
+  .pitch-sound-button {
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    padding: 0.5rem 0.9rem;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  .pitch-sound-button:hover,
+  .pitch-sound-button:focus-visible { background: var(--accent-dark); }
+
+  @media (max-width: 960px) {
+    .hero.with-pitch {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      padding-top: 3.5rem;
+      gap: 2rem;
+    }
+    .hero.with-pitch .hero-copy p { margin-left: auto; margin-right: auto; }
+    .hero-pitch { max-width: 560px; }
+  }
+
   /* Stats */
   .stats-bar {
     max-width: var(--max-w);
@@ -354,10 +431,22 @@
   </ul>
 </nav>
 
-<div class="hero">
-  <h1>Automated tools for <span>better AI performance</span></h1>
-  <p>Recursive AI develops automated methods that improve neural network performance. Our tools find improvements that human engineers miss — verified across multiple random seeds.</p>
-  <a href="#contact" class="hero-contact">Get in touch</a>
+<div class="hero" id="home-hero">
+  <div class="hero-copy">
+    <h1>Automated tools for <span>better AI performance</span></h1>
+    <p>Recursive AI develops automated methods that improve neural network performance. Our tools find improvements that human engineers miss — verified across multiple random seeds.</p>
+    <a href="#contact" class="hero-contact">Get in touch</a>
+  </div>
+  <div class="hero-pitch" id="hero-pitch" hidden>
+    <video id="founder-pitch" class="founder-pitch-video" controls muted playsinline preload="auto" aria-label="Founder presentation about Recursive AI">
+      <source src="/recursive-ai-founder-pitch-web.mp4" type="video/mp4">
+      Your browser does not support embedded video.
+    </video>
+    <div class="hero-pitch-footer">
+      <span>AI-generated founder presentation · 1:05</span>
+      <button type="button" class="pitch-sound-button" id="pitch-sound-button">Play with sound</button>
+    </div>
+  </div>
 </div>
 
 <div class="stats-bar">
@@ -436,5 +525,46 @@
   &copy; 2026 Recursive AI LLC. All rights reserved.
 </footer>
 
+<script>
+  // Keep the original homepage unchanged until the uploaded video is playable.
+  (() => {
+    const hero = document.getElementById('home-hero');
+    const panel = document.getElementById('hero-pitch');
+    const video = document.getElementById('founder-pitch');
+    const soundButton = document.getElementById('pitch-sound-button');
+    if (!hero || !panel || !video || !soundButton) return;
+
+    let shown = false;
+    function showPitch() {
+      if (shown) return;
+      shown = true;
+      panel.hidden = false;
+      hero.classList.add('with-pitch');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        video.play().catch(() => {
+          // Autoplay is optional; native controls remain available.
+        });
+      }
+    }
+
+    video.addEventListener('loadeddata', showPitch, { once: true });
+    if (video.readyState >= 2) showPitch();
+
+    video.addEventListener('error', () => {
+      panel.hidden = true;
+      hero.classList.remove('with-pitch');
+    });
+
+    soundButton.addEventListener('click', () => {
+      video.muted = false;
+      video.currentTime = 0;
+      video.play().then(() => {
+        soundButton.textContent = 'Replay with sound';
+      }).catch(() => {
+        // The visitor can still use the built-in video controls.
+      });
+    });
+  })();
+</script>
 </body>
 </html>
